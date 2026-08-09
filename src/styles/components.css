@@ -140,60 +140,89 @@
 
 .panel {
   background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-border) 28%, transparent);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--color-ink) 6%, transparent);
-  border-radius: 14px;
+  border: var(--line-thin) solid var(--color-line);
+  border-radius: var(--radius);
   padding: var(--space-5);
 }
 
+/* Buttons read as machine controls: square, ruled, monospace labels. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   min-height: var(--touch-min);
-  padding: 0.65rem 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
-  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  border: var(--line-medium) solid var(--color-line);
+  border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-ink);
   text-decoration: none;
-  box-shadow: none;
-  font-weight: 600;
-  transition: background 120ms ease, transform 80ms ease;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 120ms ease, color 120ms ease;
 }
 
 .btn:hover {
-  transform: none;
-  box-shadow: none;
-  background: color-mix(in srgb, var(--color-ink) 5%, var(--color-surface));
-}
-
-.btn:active {
-  transform: translateY(1px);
-  box-shadow: none;
+  background: var(--color-ink);
+  color: var(--color-surface);
 }
 
 .btn--primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-primary-ink);
+  background: var(--color-signal);
+  border-color: var(--color-signal);
+  color: var(--color-signal-ink);
 }
 
 .btn--primary:hover {
-  background: color-mix(in srgb, var(--color-primary) 88%, black);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-surface);
+}
+
+.btn--ghost {
+  border-color: var(--color-line-soft);
+  background: transparent;
+}
+
+.btn--small {
+  min-height: 36px;
+  padding: 0.3rem 0.7rem;
+  font-size: var(--text-micro);
+}
+
+/* Compact chrome stays small on precise pointers, full size where fingers land. */
+@media (pointer: coarse) {
+  .btn--small,
+  .btn-quiet {
+    min-height: var(--touch-min);
+  }
+}
+
+.btn--block {
+  width: 100%;
 }
 
 .btn--danger {
-  background: var(--color-coral);
-  border-color: var(--color-coral);
-  color: #fff;
+  border-color: var(--color-stop);
+  color: var(--color-stop);
+  background: transparent;
+}
+
+.btn--danger:hover {
+  background: var(--color-stop);
+  color: var(--color-surface);
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
+  background: var(--color-surface-sunk);
+  color: var(--color-ink-faint);
+  border-color: var(--color-line-soft);
 }
 
 .switcher {
@@ -219,11 +248,13 @@
   align-items: center;
   min-height: 1.75rem;
   padding: 0.15rem 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--color-border) 30%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-ink) 4%, var(--color-surface));
-  font-size: 0.8rem;
-  font-weight: 600;
+  border: var(--line-thin) solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface-sunk);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
 }
 
 .badge--locked,

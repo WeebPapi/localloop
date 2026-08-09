@@ -1,25 +1,89 @@
+/**
+ * LocalLoop design tokens — see DESIGN_LANGUAGE.md.
+ * Paper color system: off-white ground, near-black ink, one signal accent.
+ * Consume these variables; never hardcode a color, line weight, or radius.
+ */
 :root {
-  --color-bg: #f6f1e8;
-  --color-surface: #fffdf8;
-  --color-ink: #1a2e24;
-  --color-muted: #4d6358;
-  --color-primary: #1f6b4a;
-  --color-primary-ink: #f6f1e8;
-  --color-coral: #e36a5d;
-  --color-yellow: #f0c94d;
-  --color-border: #1a2e24;
-  --color-focus: #1f6b4a;
-  --shadow-hard: 4px 4px 0 var(--color-border);
-  --radius: 6px;
-  --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
-  --font-display: 'Space Grotesk', 'Source Sans 3', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Surfaces */
+  --color-paper: #e9e6dd;
+  --color-surface: #f6f4ee;
+  --color-surface-sunk: #dedace;
+  --color-inverse: #16181a;
+
+  /* Ink */
+  --color-ink: #16181a;
+  --color-ink-soft: #4a4f52;
+  --color-ink-faint: #8a8d88;
+  --color-ink-inverse: #f6f4ee;
+
+  /* Line */
+  --color-line: #16181a;
+  --color-line-soft: #b9b5a8;
+  --color-line-faint: #cfcbbe;
+
+  /* Signal — a single accent, used for the active path and primary action */
+  --color-signal: #c4451c;
+  --color-signal-ink: #f6f4ee;
+  --color-signal-wash: #f3ded5;
+
+  /* State — reserved for state, never for emphasis */
+  --color-ok: #2f6b45;
+  --color-warn: #96650a;
+  --color-stop: #a3301a;
+  --color-ok-wash: #dee9df;
+  --color-warn-wash: #f0e6cd;
+  --color-stop-wash: #f1dcd6;
+
+  /* Line hierarchy */
+  --line-hair: 0.5px;
+  --line-thin: 1px;
+  --line-medium: 1.5px;
+  --line-heavy: 3px;
+
+  /* Grid */
+  --grid: 48px;
+  --grid-sm: 12px;
+
+  /* Corners are square by default */
+  --radius: 0px;
+  --radius-round: 999px;
+
+  /* Type roles */
+  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-ui: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --tracking-label: 0.14em;
+  --tracking-display: -0.01em;
+
+  --text-micro: 0.6875rem;
+  --text-small: 0.8125rem;
+  --text-body: 1rem;
+  --text-lead: 1.125rem;
+
+  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* Layout */
   --touch-min: 44px;
-  --max-width: 72rem;
+  --max-width: 78rem;
+
+  /* Legacy aliases kept so /live/* screens inherit the new system */
+  --color-bg: var(--color-paper);
+  --color-muted: var(--color-ink-soft);
+  --color-primary: var(--color-signal);
+  --color-primary-ink: var(--color-signal-ink);
+  --color-coral: var(--color-signal);
+  --color-yellow: var(--color-warn);
+  --color-border: var(--color-line);
+  --color-focus: var(--color-signal);
+  --shadow-hard: none;
+  --font-sans: var(--font-ui);
 }

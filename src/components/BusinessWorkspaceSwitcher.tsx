@@ -19,7 +19,7 @@ export function BusinessWorkspaceSwitcher({ businessId, capabilities }: Props) {
       <div className="seg__group">
         {canAdvertiser ? (
           <NavLink
-            to={`/business/${businessId}/advertiser`}
+            to={`/live/business/${businessId}/advertiser`}
             className={({ isActive }) =>
               `seg__item${isActive ? ' seg__item--active' : ''}`
             }
@@ -29,7 +29,7 @@ export function BusinessWorkspaceSwitcher({ businessId, capabilities }: Props) {
         ) : null}
         {canHost ? (
           <NavLink
-            to={`/business/${businessId}/host`}
+            to={`/live/business/${businessId}/host`}
             className={({ isActive }) =>
               `seg__item${isActive ? ' seg__item--active' : ''}`
             }

@@ -71,6 +71,11 @@ Customer is an actor type. Advertiser and host are capabilities of a business,
 not mutually exclusive business categories. The same business may advertise
 one campaign and host a deal for another campaign.
 
+In the product app only **customer** and **business** are account types anyone
+registers as. Advertiser and host are states derived from data: a business is a
+**host** once it has accepted deals, and an **advertiser** once it owns an active
+campaign with a budget. The landing page explains exactly this distinction.
+
 ```text
 Campaign.advertiserBusinessId → business paying for customer acquisition
 Deal.hostBusinessId           → business performing the host requirement
@@ -97,63 +102,50 @@ Camora            → host workspace
 
 ## Routes
 
-Canonical routes:
+The repository now serves two layers from one bundle.
+
+### Product app (mocked, client state only)
 
 ```text
-/
-/customer/:customerId
-/business/:businessId/advertiser
-/business/:businessId/host
+/                              Landing
+/auth                          Choose account type
+/auth/register?type=customer   Register as a customer
+/auth/register?type=business   Register as a business
+/auth/login                    Sign in
+/app/deals                     Customer default view
+/app/deals/:dealId             Deal detail, criteria, claim actions
+/business                      Business dashboard default view
+/business/campaigns/new        Create-campaign wizard
 ```
 
-Demo aliases:
+The product app renders outside `DemoStateProvider` and makes no REST, SSE,
+wallet-adapter, or Solana calls. Its state lives in a client reducer plus
+`localStorage`. Wallet connection and budget deposit inside the wizard are
+visibly marked mock and never link to Solana Explorer.
+
+### Live demo (server-authoritative)
 
 ```text
-/customer   → /customer/nino
-/advertiser → /business/magnolia-film-lab/advertiser
-/host       → /business/camora/host
+/live
+/live/customer/:customerId
+/live/business/:businessId/advertiser
+/live/business/:businessId/host
 ```
 
-`/` is a polished demo launcher, not a fourth product workspace.
+Live aliases:
 
-### Frontend-only prototype route
+```text
+/live/customer   → /live/customer/nino
+/live/advertiser → /live/business/magnolia-film-lab/advertiser
+/live/host       → /live/business/camora/host
+```
 
-`/demo-preview` is a temporary, self-contained presentation prototype used to
-rehearse the complete Magnolia → Camora → Nino story before backend integration.
-It is not a canonical product workspace or a replacement for the three live
-demo routes.
+`/live` is the demo launcher for the three seeded personas. These routes keep
+the full server state machine, wallet signature verification, and real devnet
+receipts. They require a reachable API.
 
-- It renders outside `DemoStateProvider` and does not call REST, SSE, wallet
-  adapters, or Solana.
-- Its state machine is local and resettable, seeded at Nino 1/3, campaign
-  `draft`, Camora deal `proposed`, claim `locked`, and payout `not_ready`.
-- Wallet connection, message signing, funding proof, and payout are visibly
-  marked mock interactions. Mock receipts have no Explorer links and must never
-  be presented as blockchain transactions.
-- Mock business access offers Sign in and Sign up. Sign in opens the seeded
-  Magnolia profile directly; Sign up keeps the onboarding choice and
-  create-campaign flow. The advertiser enters perks, features, and deal terms,
-  connects a mock wallet, and deposits a simulated SOL campaign budget.
-  Created campaigns are saved in browser localStorage, shown as a live preview
-  beside the form fields, and may be deleted from My Campaigns. View campaigns
-  opens Camora’s host inbox with tabs for incoming partnership requests and
-  hosted campaigns; selecting one opens the host approve/verify console from
-  the guided demo.
-  The signed-in advertiser workspace is presented as a business profile with
-  Overview, My Campaigns, Redemptions, and Profile tabs. Overview hosts
-  Magnolia’s guided campaign management (wallet, simulated budget, Camora deal,
-  TSRE mock partner, redemption actions); My Campaigns lists locally created
-  campaigns.
-- A separate customer offers page lists partnership perks for customers. It
-  always includes the seeded Magnolia × Camora demo offer and also shows
-  locally saved advertiser campaigns that include a desired host partner.
-  Opening a card enters the customer reward-pass flow: Magnolia × Camora uses
-  the shared preview claim state (host verifies visits), while other offers
-  use local mock visit logging and redemption.
-- It rehearses the same ordered happy path and budget change as the final demo,
-  while TSRE Gym remains a presentation-only proposed deal.
-- The production demo still requires server-authoritative state, real cross-tab
-  synchronization, verified wallet messages, and server-funded devnet receipts.
+`/demo-preview` has been removed. The landing page and the mocked product app
+replace it, so the deployed frontend is usable without Phantom or an API.
 
 ## Architecture
 
@@ -486,18 +478,26 @@ Payout statuses: "Not ready" → "Pending" → "Processing" → "Paid"
 
 ## Design and brand direction
 
-The visual direction is deliberately flexible. Industrial/editorial and
-newspaper-inspired design is a strong option for the local-business story;
-neobrutalist borders, blocks, or shadows can be used selectively. These are
-references, not a required style recipe.
+The visual direction is **fixed** and specified in
+[`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md). Read it before any UI work.
 
-There is no prescribed primary color, paper background, accent combination,
-shadow treatment, or font stack. Establish a compact set of reusable design
-tokens and choose colors, type, spacing, borders, and imagery as one coherent
-system. Possible ingredients include editorial hierarchy, utilitarian grids,
-rules and labels, ink/paper texture, monochrome or limited-color palettes,
-stamps, and selective monospace. Gradients, illustration, photography, softer
-forms, texture, and motion are equally valid when purposeful.
+LocalLoop is drawn as a survey plan crossed with a patch panel: architectural
+blueprint drafting, circuit/systems topology, and post-industrial utility
+labeling, with brutalist information design as an accent for dense data. The
+recurring motif is the advertiser → host → customer → advertiser loop trace.
+
+Fixed decisions:
+
+- Paper color system: off-white ground, near-black ink, one signal accent, plus
+  reserved state colors. Square corners by default.
+- Line weight is meaningful: hairline construction, thin edges, medium active
+  frames, heavy section rules.
+- Three type roles: display, interface, and monospace technical microtype.
+- One numbering grammar: `A.01`, `FIG. 01`, `STEP 2 / 5`, `LOOP/ACTIVE`.
+- Compose surfaces from the primitives in `src/components/schematic/`.
+- Density alternates: low on landing hero and auth, medium on customer views,
+  high on the business dashboard and wizard review.
+- Every technical mark must trace back to real content; remove anything else.
 
 Non-negotiable usability guardrails:
 
@@ -518,12 +518,13 @@ do not require special approval when they stay within these guardrails.
 
 - Create `AGENTS.md` and `CLAUDE.md` before feature work.
 - `AGENTS.md` is the detailed repository rule set; `CLAUDE.md` is its concise
-  mirror.
+  mirror; `DESIGN_LANGUAGE.md` is the canonical visual specification.
 - Both must include the architecture, dual-capability business model,
-  English-copy contract, flexible design direction and usability guardrails, Solana
-  wallet safety rules, and required validation commands.
-- Keep this file synchronized with `HACKATHON_EPICS.md`. Changes to routes,
-  state, IDs, copy, design, APIs, or Solana behavior must update both documents.
+  English-copy contract, a pointer to the fixed design language and usability
+  guardrails, Solana wallet safety rules, and required validation commands.
+- Keep this file synchronized with `HACKATHON_EPICS.md` and
+  `DESIGN_LANGUAGE.md`. Changes to routes, state, IDs, copy, design, APIs, or
+  Solana behavior must update the affected documents together.
 - Treat `HACKATHON_EPICS.md` as the detailed implementation contract. Reconcile
   conflicts before coding rather than guessing.
 - Run `npm run typecheck` and `npm run build` after meaningful integrations.
@@ -532,13 +533,13 @@ do not require special approval when they stay within these guardrails.
 ## Final demo sequence
 
 ```text
-1. Open /advertiser as Magnolia Film Lab.
+1. Open /live/advertiser as Magnolia Film Lab.
 2. Connect the advertiser wallet and sign the plaintext funding authorization.
 3. Show that the wallet sent no transaction and the campaign has a simulated budget.
 4. Open the real server-funded funding-proof transaction in Solana Explorer.
-5. Open /host as Camora and approve the deal.
-6. Verify Nino’s two remaining visits; show /customer updating live.
-7. Request reward redemption from /customer.
+5. Open /live/host as Camora and approve the deal.
+6. Verify Nino’s two remaining visits; show /live/customer updating live.
+7. Request reward redemption from /live/customer.
 8. Validate the redemption from Magnolia’s advertiser workspace.
 9. Show payout processing, then Camora’s "Paid" status.
 10. Open the real server-funded payout transaction in Solana Explorer.

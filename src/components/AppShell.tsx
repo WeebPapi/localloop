@@ -18,7 +18,7 @@ export function AppShell({ children, title, workspaceSwitch }: AppShellProps) {
     <div className="app-shell">
       <header className="app-shell__header">
         <div className="app-shell__top">
-          <Link to="/" className="app-shell__brand">
+          <Link to="/live" className="app-shell__brand">
             {en.brand}
           </Link>
           <div className="app-shell__tools">

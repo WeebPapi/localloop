@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useParams, Link } from 'react-router-dom';
+import { Link, Navigate, Outlet, Route, useParams } from 'react-router-dom';
 import { ids } from '../../shared/ids';
 import type { BusinessCapability } from '../../shared/types';
 import { AppShell } from '../components/AppShell';
@@ -7,7 +7,22 @@ import { en } from '../copy/en';
 import { AdvertiserPage } from '../features/advertiser/AdvertiserPage';
 import { CustomerPage } from '../features/customer/CustomerPage';
 import { HostPage } from '../features/host/HostPage';
-import { useDemoState } from './DemoStateProvider';
+import { WalletProviders } from '../lib/WalletProviders';
+import { DemoStateProvider, useDemoState } from './DemoStateProvider';
+
+/**
+ * The server-authoritative Solana demo. Everything under /live/* talks to the
+ * Express API; the product app at / is mocked and never enters this tree.
+ */
+function LiveProviders() {
+  return (
+    <WalletProviders>
+      <DemoStateProvider>
+        <Outlet />
+      </DemoStateProvider>
+    </WalletProviders>
+  );
+}
 
 function DemoLauncher() {
   return (
@@ -16,16 +31,19 @@ function DemoLauncher() {
         <h2>{en.demoLauncherTitle}</h2>
         <p>{en.demoLauncherBody}</p>
         <div className="launcher-grid">
-          <Link className="btn btn--primary" to="/customer">
+          <Link className="btn btn--primary" to="/live/customer">
             {en.openCustomer}
           </Link>
-          <Link className="btn btn--primary" to="/advertiser">
+          <Link className="btn btn--primary" to="/live/advertiser">
             {en.openAdvertiser}
           </Link>
-          <Link className="btn btn--primary" to="/host">
+          <Link className="btn btn--primary" to="/live/host">
             {en.openHost}
           </Link>
         </div>
+        <p>
+          <Link to="/">{en.backToProduct}</Link>
+        </p>
       </div>
     </AppShell>
   );
@@ -49,7 +67,7 @@ function BusinessWorkspaceRoute({
   }
 
   if (!business) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/live" replace />;
   }
 
   if (!business.capabilities.includes(workspace)) {
@@ -57,7 +75,7 @@ function BusinessWorkspaceRoute({
       <AppShell>
         <div className="panel">
           <p>{en.capabilityMissing}</p>
-          <Link className="btn" to="/">
+          <Link className="btn" to="/live">
             {en.brand}
           </Link>
         </div>
@@ -95,7 +113,7 @@ function CustomerRoute() {
   const customer = state.customers.find((item) => item.id === customerId);
 
   if (!customer) {
-    return <Navigate to={`/customer/${ids.nino}`} replace />;
+    return <Navigate to={`/live/customer/${ids.nino}`} replace />;
   }
 
   return (
@@ -105,31 +123,34 @@ function CustomerRoute() {
   );
 }
 
-export function AppRouter() {
+export function liveRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<DemoLauncher />} />
-      <Route path="/customer" element={<Navigate to={`/customer/${ids.nino}`} replace />} />
-      <Route path="/customer/:customerId" element={<CustomerRoute />} />
+    <Route path="/live" element={<LiveProviders />}>
+      <Route index element={<DemoLauncher />} />
       <Route
-        path="/advertiser"
+        path="customer"
+        element={<Navigate to={`/live/customer/${ids.nino}`} replace />}
+      />
+      <Route path="customer/:customerId" element={<CustomerRoute />} />
+      <Route
+        path="advertiser"
         element={
-          <Navigate to={`/business/${ids.magnolia}/advertiser`} replace />
+          <Navigate to={`/live/business/${ids.magnolia}/advertiser`} replace />
         }
       />
       <Route
-        path="/host"
-        element={<Navigate to={`/business/${ids.camora}/host`} replace />}
+        path="host"
+        element={<Navigate to={`/live/business/${ids.camora}/host`} replace />}
       />
       <Route
-        path="/business/:businessId/advertiser"
+        path="business/:businessId/advertiser"
         element={<BusinessWorkspaceRoute workspace="advertiser" />}
       />
       <Route
-        path="/business/:businessId/host"
+        path="business/:businessId/host"
         element={<BusinessWorkspaceRoute workspace="host" />}
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      <Route path="*" element={<Navigate to="/live" replace />} />
+    </Route>
   );
 }

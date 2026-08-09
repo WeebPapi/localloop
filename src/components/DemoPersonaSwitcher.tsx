@@ -3,9 +3,9 @@ import { ids } from '../../shared/ids';
 import { en } from '../copy/en';
 
 const personas = [
-  { to: `/customer/${ids.nino}`, label: en.personaNino },
-  { to: `/business/${ids.magnolia}/advertiser`, label: 'Magnolia' },
-  { to: `/business/${ids.camora}/host`, label: en.personaCamora },
+  { to: `/live/customer/${ids.nino}`, label: en.personaNino },
+  { to: `/live/business/${ids.magnolia}/advertiser`, label: 'Magnolia' },
+  { to: `/live/business/${ids.camora}/host`, label: en.personaCamora },
 ] as const;
 
 export function DemoPersonaSwitcher() {

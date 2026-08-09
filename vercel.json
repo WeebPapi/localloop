@@ -2,37 +2,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/demo-preview",
-      "permanent": false
-    },
-    {
-      "source": "/advertiser",
-      "destination": "/demo-preview",
-      "permanent": false
-    },
-    {
-      "source": "/host",
-      "destination": "/demo-preview",
-      "permanent": false
-    },
-    {
-      "source": "/customer",
-      "destination": "/demo-preview",
-      "permanent": false
-    },
-    {
-      "source": "/customer/:path*",
-      "destination": "/demo-preview",
-      "permanent": false
-    },
-    {
-      "source": "/business/:path*",
-      "destination": "/demo-preview",
-      "permanent": false
-    }
-  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

@@ -165,7 +165,8 @@ src/
   main.tsx
   app/
     App.tsx
-    router.tsx
+    router.tsx            live demo routes (/live/*)
+    productRouter.tsx     product routes (/, /auth, /app, /business)
     DemoStateProvider.tsx
   components/
     AppShell.tsx
@@ -174,10 +175,20 @@ src/
     StatusBadge.tsx
     TransactionReceipt.tsx
     DemoResetButton.tsx
+    schematic/            design-language primitives
   features/
-    customer/
-    advertiser/
-    host/
+    customer/             live demo
+    advertiser/           live demo
+    host/                 live demo
+    landing/              product
+    auth/                 product
+    app/                  product customer views
+    business/             product business dashboard + wizard
+  mock/
+    data.ts
+    session.tsx
+    store.tsx
+    campaignStorage.ts
   lib/
     api.ts
     events.ts
@@ -188,6 +199,8 @@ src/
     tokens.css
     globals.css
     components.css
+    schematic.css
+    product.css
 server/
   index.ts
   app.ts
@@ -268,66 +281,68 @@ but default the walkthrough to Magnolia advertiser and Camora host. Their
 opposite workspaces may show concise English empty states; do not create extra
 fake campaigns merely to fill them.
 
-Canonical routes:
+Product routes (mocked, client state only):
 
 ```text
 /
-/customer/:customerId
-/business/:businessId/advertiser
-/business/:businessId/host
+/auth
+/auth/register?type=customer|business
+/auth/login
+/app/deals
+/app/deals/:dealId
+/business
+/business/campaigns/new
 ```
 
-Demo aliases:
+Live demo routes (server-authoritative):
 
 ```text
-/customer   → /customer/nino
-/advertiser → /business/magnolia-film-lab/advertiser
-/host       → /business/camora/host
+/live
+/live/customer/:customerId
+/live/business/:businessId/advertiser
+/live/business/:businessId/host
 ```
 
-The router must reject or redirect a business workspace when the selected
+Live aliases:
+
+```text
+/live/customer   → /live/customer/nino
+/live/advertiser → /live/business/magnolia-film-lab/advertiser
+/live/host       → /live/business/camora/host
+```
+
+The router must reject or redirect a live business workspace when the selected
 business lacks the requested capability.
 
-### Temporary frontend-only prototype
+### Product app (mocked)
 
-`/demo-preview` is an isolated presentation prototype for rehearsing the full
-Magnolia → Camora → Nino happy path before backend integration. It is explicitly
-noncanonical and must not change the behavior of `/`, `/customer`,
-`/advertiser`, `/host`, or the parameterized workspace routes.
+`/`, `/auth/*`, `/app/*`, and `/business/*` are the product experience. They are
+mocked end to end and must not change the behavior of any `/live/*` route.
 
-Prototype boundaries:
+Product-app boundaries:
 
-- Render it outside `DemoStateProvider`; it must make no API, SSE, wallet
-  adapter, or Solana calls.
-- Keep its reducer and mutable state inside `src/features/demo-preview/`.
-- Seed it from the canonical story: Nino 1/3, campaign `draft`, Camora deal
-  `proposed`, claim `locked`, payout `not_ready`, and 0.05 SOL simulated budget.
-- Guard the same ordered transitions as the real flow and finish at 3/3,
-  `redeemed`, payout `paid`, and 0.045 SOL remaining.
-- Label every wallet, signature, funding, payout, and receipt interaction as
-  mock. Do not fabricate or link to Solana Explorer transactions.
-- Offer mock Sign in and Sign up paths. Sign in opens the seeded Magnolia
-  profile directly; Sign up keeps the onboarding choice and create-campaign
-  flow that collects perks, features, and deal fields, connects a mock wallet,
-  and deposits a simulated SOL budget. View campaigns opens the Camora host
-  inbox with tabs for partnership requests sent to Camora and every campaign
-  currently hosted there. Selecting a campaign opens the host approve/verify
-  flow.
-- Present the signed-in prototype advertiser workspace as a business profile
-  with Overview, My Campaigns, Redemptions, and Profile tabs. Overview hosts
-  Magnolia’s guided campaign management (wallet, budget, Camora deal, TSRE
-  mock partner, redemption actions). Surface the required campaign budget,
-  partner deal, wallet, and redemption concepts without changing canonical
-  server-owned demo state. Local campaigns may be deleted from My Campaigns.
-- Add a customer offers page that surfaces partnership perks, including the
-  seeded Magnolia × Camora path and any locally saved advertiser campaigns
-  that include a desired host partner. Opening an offer card enters the
-  customer reward-pass flow (shared preview state for Magnolia × Camora;
-  local mock visit/redemption for other offers).
-- Keep the TSRE Gym proposed card visible, but do not add a TSRE E2E flow.
-- Treat this route as rehearsal UI only. It does not satisfy LL-102 or LL-105
-  acceptance criteria and must not be reused as a client-side authoritative
-  store for canonical routes.
+- Render outside `DemoStateProvider`. No REST, SSE, wallet-adapter, or Solana
+  calls from these routes.
+- Keep mock data, session, and persistence in `src/mock/`; keep views in
+  `src/features/landing/`, `src/features/auth/`, `src/features/app/`, and
+  `src/features/business/`.
+- Only **customer** and **business** register. Advertiser and host are derived:
+  host = the business has accepted deals; advertiser = the business owns an
+  active campaign with a budget.
+- The landing page must explain LocalLoop, the customer side, the business side,
+  and the host/advertiser distinction, using the loop motif as the explanation.
+- Customer default view lists active deals across advertiser campaigns; a deal
+  detail page shows criteria and the claim actions.
+- Business default view is a dashboard; the create-campaign wizard collects
+  budget, desired partners, and proposed deals as separate step components
+  rather than one long form.
+- Label every wallet, signature, funding, and payout interaction as mock. Never
+  fabricate or link to Solana Explorer transactions from the product app.
+- Session and created campaigns persist in `localStorage` only.
+- These routes do not satisfy LL-102 or LL-105 acceptance criteria and must not
+  become an authoritative store for `/live/*`.
+
+`/demo-preview` has been removed and replaced by this product app.
 
 ## 4. Shared domain and state-machine contract
 
@@ -691,16 +706,30 @@ through pages.
 
 ## 9. Design and brand contract
 
-The visual system is open by design. Industrial/editorial and newspaper cues
-are strong options for the local-business story, and selective neobrutalist
-details can add energy, but no single reference is mandatory.
+The visual system is **fixed**. [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) is
+the canonical specification and takes precedence over any older wording here.
 
-There is no required color palette, paper background, border weight, shadow
-style, or font stack. Choose a compact tokenized system and apply it coherently.
-Editorial type hierarchy, utilitarian grids, rules, labels, stamps, ink/paper
-texture, monochrome or limited-color palettes, and selective monospace are
-useful ingredients—not a checklist. Gradients, photography, illustration,
-softer forms, texture, and motion are also valid when they support the concept.
+LocalLoop is drawn as a survey plan crossed with a patch panel: architectural
+blueprint drafting, circuit/systems diagram topology, and post-industrial
+utility labeling, with brutalist information design as an accent for dense data.
+The recurring motif is the advertiser → host → customer → advertiser loop trace.
+
+Required:
+
+- Tokens from `src/styles/tokens.css`: paper ground, near-black ink, one signal
+  accent, reserved state colors, square corners, a four-step line-weight scale,
+  and display/interface/monospace type roles.
+- Compose surfaces from the primitives in `src/components/schematic/`.
+- One numbering grammar across the product: `A.01`, `FIG. 01`, `STEP 2 / 5`,
+  `LOOP/ACTIVE`.
+- Alternating density: low on hero and auth, medium on customer views, high on
+  the business dashboard, wizard review, and footers.
+- Every technical mark traces back to real content — budgets, visit counts,
+  claim IDs, statuses, addresses. Delete decoration with no informational role.
+
+Forbidden: purple/blue gradients, neon glow, glassmorphism, universally rounded
+cards, fake terminal output, random hex strings, decorative binary, meaningless
+circuit traces, and generic crypto-dashboard clichés.
 
 Usability guardrails:
 

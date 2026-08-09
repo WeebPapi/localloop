@@ -6,6 +6,18 @@ then implement against `CONTEXT_HANDOVER.md` and `HACKATHON_EPICS.md`.
 
 Keep those two docs synchronized with any change to routes, state, IDs, copy,
 design, APIs, or Solana behavior. If they conflict, reconcile before coding.
+[`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) is the single source of truth for
+visual decisions.
+
+The repository now contains two layers:
+
+1. **Product app** (`/`, `/auth/*`, `/app/*`, `/business/*`) — the mocked
+   landing, auth, customer, and business experience. Client state only.
+2. **Live demo** (`/live/*`) — the server-authoritative state machine with real
+   wallet signatures and Solana devnet receipts. Fully intact, simply not wired
+   into the product app.
+
+Do not delete or weaken the live layer while building product surfaces.
 
 ## Ownership boundaries
 
@@ -51,36 +63,56 @@ Every meaningful integration finishes with `npm run typecheck` and `npm run buil
 
 ### Routes
 
-Canonical:
+The product app is mock-driven and needs no API. The API + Solana demo lives
+under `/live/*`.
+
+Product (mocked, client state only):
 
 ```text
-/
-/customer/:customerId
-/business/:businessId/advertiser
-/business/:businessId/host
+/                              Landing
+/auth                          Choose account type
+/auth/register?type=…          Register as customer or business
+/auth/login                    Sign in
+/app/deals                     Customer default view
+/app/deals/:dealId             Deal detail, criteria, claim actions
+/business                      Business dashboard default view
+/business/campaigns/new        Create-campaign wizard
 ```
 
-Demo aliases:
+Live demo (server-authoritative, Solana devnet):
 
 ```text
-/customer   → /customer/nino
-/advertiser → /business/magnolia-film-lab/advertiser
-/host       → /business/camora/host
+/live
+/live/customer/:customerId
+/live/business/:businessId/advertiser
+/live/business/:businessId/host
 ```
 
-Reject or redirect a business workspace when the business lacks that capability.
+Live aliases:
+
+```text
+/live/customer   → /live/customer/nino
+/live/advertiser → /live/business/magnolia-film-lab/advertiser
+/live/host       → /live/business/camora/host
+```
+
+Reject or redirect a live business workspace when the business lacks that
+capability. `/demo-preview` no longer exists; the landing page replaced it.
 
 ## Business model
 
-- **Customer** is an actor type.
-- **Advertiser** and **host** are capabilities of a business (`capabilities[]`),
-  not mutually exclusive permanent types.
+- **Customer** and **business** are the only account types anyone registers as.
+- **Advertiser** and **host** are *states derived from data*, not signup choices:
+  a business is a **host** when it has accepted deals, and an **advertiser**
+  when it owns an active campaign with a budget.
 - Same business may advertise one campaign and host another.
+- `Business.capabilities[]` remains the server-side representation for the live
+  demo; the product app derives the same distinction from campaigns and deals.
 
 Navigation must stay distinct:
 
-- `DemoPersonaSwitcher` — demo tooling (Nino / Magnolia / Camora), labelled
-  "Demo mode".
+- `DemoPersonaSwitcher` — live-demo tooling (Nino / Magnolia / Camora), labelled
+  "Demo mode". Only appears under `/live/*`.
 - `BusinessWorkspaceSwitcher` — advertiser/host tasks for the same business.
 
 ## English copy
@@ -97,24 +129,29 @@ URLs in their conventional form.
 
 ## Design direction
 
-The visual system is intentionally open. An industrial/editorial or newspaper
-character is a useful direction, and neobrutalist details may be mixed in, but
-none of those references is a mandatory house style.
+The visual system is **fixed and specified** in [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md).
+Read it before touching UI. Summary:
 
-- No prescribed primary color, background, accent palette, border treatment,
-  shadow style, or font family. Choose a small, coherent tokenized system that
-  supports the concept and remains consistent across all three workspaces.
-- Editorial typography, restrained monochrome palettes, ink/paper cues,
-  utilitarian grids, rules, labels, stamps, and selective monospace are welcome
-  options—not requirements.
-- Gradients, texture, softer forms, illustration, motion, and other treatments
-  are allowed when they strengthen hierarchy and the product story.
+- Concept: a neighborhood rewards network drawn as a survey plan crossed with a
+  patch panel. Architectural/blueprint + circuit/systems diagram +
+  post-industrial utility labeling, with brutalist information design as accent.
+- Recurring motif: the advertiser → host → customer → advertiser loop trace.
+- Paper color system: off-white ground, near-black ink, one signal accent, plus
+  reserved state colors. Square corners by default.
+- Line weight carries meaning (`--line-hair` … `--line-heavy`); do not give
+  every box the same border.
+- Three type roles: display, interface, and monospace technical. Microtype is
+  metadata, never body copy.
+- One numbering grammar: `A.01`, `FIG. 01`, `STEP 2 / 5`, `LOOP/ACTIVE`.
+- Compose from the primitives in `src/components/schematic/`; add a primitive
+  instead of one-off decorative markup.
+- Every technical mark must trace back to real content. Delete decoration that
+  has no informational or hierarchical role.
 
 Guardrails: mobile-first at 375px, responsive on desktop, ≥44px touch targets,
-accessible contrast, visible focus, readable typography, and explicit loading,
-disabled, success, empty, and error states. Avoid visual effects that reduce
-legibility, generic crypto-dashboard clichés, and decoration without a clear
-role. Treat creative direction as a design decision, not a compliance checklist.
+accessible contrast, visible focus, readable typography, `prefers-reduced-motion`
+support, and explicit loading, disabled, success, empty, and error states.
+Recompose diagrams for mobile rather than shrinking them.
 
 ## Solana wallet safety (non-negotiable)
 

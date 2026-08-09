@@ -5,37 +5,31 @@ nearby host businesses unlock customer rewards, and verified redemption triggers
 a host payout on Solana **devnet** — without moving funds from the connected
 advertiser wallet.
 
-## Demo disclaimer (please read)
+## Two layers (please read)
 
-The **working Solana MVP** (`/`, `/customer`, `/advertiser`, `/host`) depends on:
+**1. Product app — open `/` and click around.** The landing page, sign-up,
+customer deal browsing, and the business dashboard with its create-campaign
+wizard are fully mocked in the browser. No Phantom, no backend, no config.
+
+```text
+https://localloop-murex.vercel.app
+```
+
+**2. Working Solana MVP — `/live/*`.** The server-authoritative state machine
+with real wallet signatures and devnet receipts. It depends on:
 
 1. A browser with the **Phantom** wallet extension installed and unlocked
 2. A reachable **backend** (local `npm run dev` / `npm start`, or a tunnelled API)
 
-Those live routes are easy to miss in a quick judge pass: without Phantom + API
-they will not complete the wallet / funding / payout path.
-
-**For judging in the browser, use the mocked walkthrough:**
-
-```text
-https://localloop-murex.vercel.app/demo-preview
-```
-
-(or `/demo-preview` on any deploy of this frontend)
-
-`/demo-preview` is a self-contained frontend prototype of the full Magnolia →
-Camora → Nino story. It does not need Phantom or the API.
-
-**Deployed frontend (static):** [https://localloop-murex.vercel.app](https://localloop-murex.vercel.app)  
-Live Solana routes on that host still need a reachable API + Phantom; prefer
-`/demo-preview` unless you are running the full stack.
+Without Phantom + API those routes cannot complete the wallet / funding / payout
+path, so a quick judge pass should start at `/`.
 
 **In our demo video we show both:**
 
-1. The **working MVP** on our device (Phantom + backend) — real `signMessage`
-   authorization and server-funded Solana **devnet** receipts
-2. The **mocked** `/demo-preview` flow — same product story for anyone opening
-   the deployed frontend without our local stack
+1. The **product app** at `/` — landing, dual account types, customer deal
+   claiming, and the business campaign wizard
+2. The **working MVP** at `/live/*` on our device (Phantom + backend) — real
+   `signMessage` authorization and server-funded Solana **devnet** receipts
 
 ## Quick start (app without Solana secrets)
 
@@ -96,5 +90,6 @@ Create a local `.env` (never commit it) from `.env.example`, then supply:
 
 - [`AGENTS.md`](./AGENTS.md) — detailed repository rules
 - [`CLAUDE.md`](./CLAUDE.md) — concise mirror
+- [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) — canonical visual specification
 - [`CONTEXT_HANDOVER.md`](./CONTEXT_HANDOVER.md) — architecture & demo story
 - [`HACKATHON_EPICS.md`](./HACKATHON_EPICS.md) — epics & acceptance criteria

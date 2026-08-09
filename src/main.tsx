@@ -3,8 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import './styles/tokens.css';
 import './styles/globals.css';
+import './styles/schematic.css';
 import './styles/components.css';
-import './styles/demo-preview.css';
+import './styles/product.css';
 
 const root = document.getElementById('root');
 if (!root) {

@@ -7,6 +7,7 @@ import {
   StampProgress,
   TechnicalLabel,
   TechnicalPanel,
+  Teleprinter,
   type LoopEdge,
   type LoopNode,
   type LoopNodeId,
@@ -42,6 +43,9 @@ export function DealDetailPage() {
   const { deal, campaign, advertiser, host, claim } = offer;
   const mark = claimMark(claim);
   const visits = claim?.verifiedVisits ?? 0;
+  const pairLabel = `${host.name} × ${advertiser.name} · ${advertiser.sector}`;
+  const labelSpeed = 28;
+  const titleDelay = pairLabel.length * labelSpeed + 80;
 
   const activeNode: LoopNodeId =
     !claim || claim.status === 'locked' ? 'host' : 'advertiser';
@@ -95,9 +99,18 @@ export function DealDetailPage() {
                 <PartnershipMark host={host} advertiser={advertiser} size="lg" />
               </div>
               <TechnicalLabel tone="soft">
-                {host.name} × {advertiser.name} · {advertiser.sector}
+                <Teleprinter
+                  text={pairLabel}
+                  speed={labelSpeed}
+                  caret={false}
+                />
               </TechnicalLabel>
-              <h1 className="deal-hero__title">{deal.headline}</h1>
+              <Teleprinter
+                as="h1"
+                className="deal-hero__title"
+                text={deal.headline}
+                delay={titleDelay}
+              />
               <p className="deal-hero__perk">{campaign.perk}</p>
               <p className="note">{campaign.conditions}</p>
             </article>
@@ -163,7 +176,13 @@ export function DealDetailPage() {
             label={copy.progressSection}
             frame="medium"
             status={mark}
-            footer={claim ? `CLAIM/${claim.id}` : 'CLAIM/NOT OPENED'}
+            footer={
+              claim ? (
+                <Teleprinter text={`CLAIM/${claim.id}`} speed={22} />
+              ) : (
+                'CLAIM/NOT OPENED'
+              )
+            }
           >
             <StampProgress
               completed={visits}

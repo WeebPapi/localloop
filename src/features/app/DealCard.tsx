@@ -1,7 +1,7 @@
 import { useId, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { PartnershipMark } from '../../components/BrandMark';
-import { StatusMark } from '../../components/schematic';
+import { StatusMark, Teleprinter, useInView } from '../../components/schematic';
 import { en } from '../../copy/en';
 import type { Offer } from '../../mock/selectors';
 import type { BusinessLinks, MockBusiness } from '../../mock/types';
@@ -12,6 +12,8 @@ const copy = en.customerApp;
 type Props = {
   offer: Offer;
   index: string;
+  /** Zero-based deck position used to stagger the headline reveal. */
+  stagger?: number;
 };
 
 type PlaceKind = 'visit' | 'reward';
@@ -76,9 +78,10 @@ function PlaceBlock({
   );
 }
 
-export function DealCard({ offer, index }: Props) {
+export function DealCard({ offer, index, stagger = 0 }: Props) {
   const [open, setOpen] = useState(false);
   const drawerId = useId();
+  const [cardRef, inView] = useInView<HTMLElement>();
   const { deal, campaign, advertiser, host, claim } = offer;
   const mark = claimMark(claim);
 
@@ -101,6 +104,7 @@ export function DealCard({ offer, index }: Props) {
 
   return (
     <article
+      ref={cardRef}
       className={`deal-card${open ? ' deal-card--open' : ''}`}
       data-index={index}
     >
@@ -122,7 +126,14 @@ export function DealCard({ offer, index }: Props) {
             </span>
             <span>{advertiser.name}</span>
           </p>
-          <h3 className="deal-card__title">{deal.headline}</h3>
+          <Teleprinter
+            as="h3"
+            className="deal-card__title"
+            text={deal.headline}
+            trigger={inView}
+            delay={Math.min(stagger, 6) * 90}
+            caret={false}
+          />
         </div>
 
         <div className="deal-card__places">

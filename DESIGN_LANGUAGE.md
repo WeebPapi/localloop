@@ -20,7 +20,7 @@ PRIMARY LINE LANGUAGE: hairline construction / thin edges / medium frames / heav
 PRIMARY TYPE CONTRAST: tight display sans vs monospace technical labels
 PRIMARY MOTIF:         the closed loop (advertiser → host → customer → advertiser)
 DATA USED AS DECORATION: SOL budgets, visit counts, claim IDs, campaign IDs, addresses
-MOTION LANGUAGE:       trace flow along the loop only; disabled under reduced motion
+MOTION LANGUAGE:       trace flow along the loop, plus a teleprinter-style character reveal for headlines/labels tied to a real page load or state change; both disabled under reduced motion
 ```
 
 The page is a **system being documented**, not a page with technical decoration
@@ -165,7 +165,8 @@ Campaign wizard    → route diagram (steps as waypoints on the loop)
 - Accessible contrast for all text, including microtype.
 - Visible keyboard focus on every interactive element.
 - Explicit loading, disabled, empty, success, and error states.
-- `prefers-reduced-motion` disables trace animation and diagram assembly.
+- `prefers-reduced-motion` disables trace animation and diagram assembly;
+  teleprinter text reveals fall back to plain static text.
 - Semantic landmarks and heading order; navigation stays obvious.
 
 ## 13. Performance
@@ -180,10 +181,14 @@ Implemented in `src/components/schematic/` and styled by
 
 `TechnicalPanel`, `FigureIndex`, `TechnicalLabel`, `StatusMark`, `Annotation`,
 `DimensionLine`, `RegistrationMark`, `GridOverlay`, `LoopTrace`, `ArchiveRow`,
-`SectionMarker`, `ScaleBar`, `StampProgress`, `RouteSteps`.
+`SectionMarker`, `ScaleBar`, `StampProgress`, `RouteSteps`, `Teleprinter`.
 
 Compose pages from primitives. If a page needs a new visual device, add a
 primitive rather than one-off markup.
+
+`Teleprinter` is the discrete character-reveal device. It fires once per real
+event (page load, a card entering view, a new claim ID appearing) and never on
+unrelated re-renders. Do not apply it to body paragraphs or fine print.
 
 ## 15. Content-derived decoration
 
@@ -205,3 +210,5 @@ Before calling a surface done: one clear metaphor, controlled line weights,
 intentional empty space, legible annotations, real metadata, obvious navigation,
 comfortable body copy, working keyboard access, visible focus, sufficient
 contrast, correct mobile reading order, and no decoration without a role.
+Motion (loop traces, teleprinter reveals) must map to real content or a real
+state change, and must collapse cleanly under `prefers-reduced-motion`.

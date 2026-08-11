@@ -3,6 +3,7 @@ import {
   SectionMarker,
   TechnicalLabel,
   TechnicalPanel,
+  Teleprinter,
 } from '../../components/schematic';
 import { en } from '../../copy/en';
 import { getOffers } from '../../mock/selectors';
@@ -17,6 +18,7 @@ export function DealsIndexPage() {
   const { session } = useSession();
   const offers = getOffers(state);
   const passes = offers.filter((offer) => offer.claim);
+  const identityLabel = session ? session.name : 'Customer';
 
   return (
     <ProductShell surface="B" meta={`CUSTOMER / ${offers.length} LIVE DEALS`}>
@@ -24,9 +26,14 @@ export function DealsIndexPage() {
         <div className="identity">
           <div>
             <TechnicalLabel tone="soft">
-              {session ? session.name : 'Customer'}
+              <Teleprinter text={identityLabel} speed={30} caret={false} />
             </TechnicalLabel>
-            <h1 className="identity__name">{copy.indexTitle}</h1>
+            <Teleprinter
+              as="h1"
+              className="identity__name"
+              text={copy.indexTitle}
+              delay={260}
+            />
             <p className="prose">{copy.indexLede}</p>
           </div>
         </div>
@@ -47,6 +54,7 @@ export function DealsIndexPage() {
                   key={offer.deal.id}
                   offer={offer}
                   index={String(index + 1).padStart(2, '0')}
+                  stagger={index}
                 />
               ))}
             </div>
@@ -71,6 +79,7 @@ export function DealsIndexPage() {
                   key={offer.deal.id}
                   offer={offer}
                   index={`D-${String(index + 1).padStart(2, '0')}`}
+                  stagger={index}
                 />
               ))}
             </div>

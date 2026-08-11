@@ -22,3 +22,8 @@ export function useMediaQuery(query: string): boolean {
 export function useIsCompact(): boolean {
   return useMediaQuery('(max-width: 47.99rem)');
 }
+
+/** True when the user prefers reduced motion — animations should fall back to static. */
+export function usePrefersReducedMotion(): boolean {
+  return useMediaQuery('(prefers-reduced-motion: reduce)');
+}

@@ -1,9 +1,13 @@
 # LocalLoop — Design Language
 
-This is the canonical visual specification for LocalLoop. It replaces the earlier
-"visual direction is open" guidance in `AGENTS.md`, `CLAUDE.md`,
-`CONTEXT_HANDOVER.md`, and `HACKATHON_EPICS.md`. Those documents reference this
-file; change this file first, then reconcile the others.
+This is the canonical visual specification for LocalLoop. When a visual-system
+decision changes, update this file first and then reconcile the relevant
+canonical document in [`docs/`](./docs/README.md).
+
+> **Documentation update (2026-08-11):** `CONTEXT_HANDOVER.md` and
+> `HACKATHON_EPICS.md` have been retired. The current canonical context lives
+> in [`docs/`](./docs/README.md); update this file and the relevant canonical
+> document together when a visual-system decision changes.
 
 ## 1. Concept
 

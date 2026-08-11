@@ -1,186 +1,105 @@
-# LocalLoop — Agent Rules
+# LocalLoop Agent Guide
 
-This is a **new** full-stack hackathon demo. Do not assume an existing POC,
-legacy component tree, or reusable client-side domain store. Inspect the repo,
-then implement against `CONTEXT_HANDOVER.md` and `HACKATHON_EPICS.md`.
+This repository is the canonical home for LocalLoop's product context. Do not
+treat Linear, chat history, or a task description as a competing product spec.
+When they conflict, use the documents below and raise the conflict before
+coding.
 
-Keep those two docs synchronized with any change to routes, state, IDs, copy,
-design, APIs, or Solana behavior. If they conflict, reconcile before coding.
-[`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) is the single source of truth for
-visual decisions.
+## Start here
 
-The repository now contains two layers:
+Before meaningful work:
 
-1. **Product app** (`/`, `/auth/*`, `/app/*`, `/business/*`) — the mocked
-   landing, auth, customer, and business experience. Client state only.
-2. **Live demo** (`/live/*`) — the server-authoritative state machine with real
-   wallet signatures and Solana devnet receipts. Fully intact, simply not wired
-   into the product app.
+1. Read [`docs/agent-context.md`](./docs/agent-context.md).
+2. Read the task's Linear issue, including its acceptance criteria and linked
+   decisions.
+3. Read the additional canonical document relevant to the work:
+   - product or scope: [`docs/vision.md`](./docs/vision.md) and
+     [`docs/mvp-georgia.md`](./docs/mvp-georgia.md)
+   - implementation state: [`docs/current-state.md`](./docs/current-state.md)
+   - API, state, wallet, or infrastructure: [`docs/architecture.md`](./docs/architecture.md)
+   - visual work: [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md)
+   - a prior decision: [`docs/decisions/`](./docs/decisions/)
+4. Inspect the code you will change. Do not infer current behavior from docs
+   alone.
 
-Do not delete or weaken the live layer while building product surfaces.
+## Documentation is part of the change
 
-## Ownership boundaries
+A change is incomplete until its documentation impact has been handled in the
+same pull request.
 
-| Area | Path | Notes |
-|------|------|--------|
-| Frontend UI | `src/` | Views, components, styles, copy presentation |
-| Shared contracts | `shared/` | Types, IDs, API envelopes — notify dependents before changing |
-| Server domain | `server/domain/` | Authoritative state, seed, transitions |
-| Server API | `server/api/` | REST + SSE |
-| Wallet verify | `server/wallet/` | Challenges + Ed25519 verification |
-| Solana (server-only) | `server/solana/` | Devnet funding proof + host payout |
+Update documentation when a change affects any of the following:
 
-Do not edit another active epic owner’s files without coordination.
-Only LL-105 may access the server demo treasury secret.
+- the target customer, value proposition, Georgia pilot scope, success measure,
+  or an explicit non-goal;
+- a user journey, route, product promise, seed scenario, or important current
+  limitation;
+- a domain rule, API contract, state transition, data boundary, deployment
+  boundary, or security constraint;
+- a durable product or technical decision.
 
-## Architecture
+| Change | Update |
+|---|---|
+| Mission, customer, product thesis | `docs/vision.md` |
+| Pilot scope, success criteria, inclusion/exclusion | `docs/mvp-georgia.md` |
+| Shipped state, routes, mocks, known gaps | `docs/current-state.md` |
+| Architecture, contracts, system/security boundaries | `docs/architecture.md` |
+| A durable choice or reversal | new or superseding ADR in `docs/decisions/` |
+| Visual system | `DESIGN_LANGUAGE.md` |
 
-```text
-React + Vite frontend
-        ↓ REST + Server-Sent Events
-Node + Express API
-        ├─ server-owned in-memory demo state
-        ├─ validated domain transitions
-        ├─ Ed25519 wallet-signature verification
-        └─ server-only Solana devnet signer
-```
+Routine refactors, isolated copy fixes, and implementation details that do not
+change the documented contract do not require a docs edit. In that case, say
+`Docs: not required` in the PR description and state why. Never change a
+canonical document merely to make it look recently updated.
 
-- Server state is authoritative; frontend state is a projection.
-- No database. No Docker by default. No production auth. No Anchor program.
-- Backend restart resets in-memory state — acceptable demo limitation.
+## Product and runtime boundaries
 
-### Required scripts (Node 20+)
+The repository has two intentionally different layers:
 
-```bash
-npm install
-npm run dev          # Vite :5173 + Express :3001 via concurrently
-npm run typecheck    # tsc --noEmit (client + server)
-npm run build        # typecheck + vite build
-npm start            # Express serves API + dist/
-```
+1. **Product app** (`/`, `/auth/*`, `/app/*`, `/business/*`) is a mocked,
+   client-state product experience.
+2. **Live demo** (`/live/*`) is a server-authoritative demo with wallet message
+   verification and Solana devnet receipts.
 
-Every meaningful integration finishes with `npm run typecheck` and `npm run build`.
+Do not weaken the live layer while changing product surfaces. The detailed
+boundary and current limitations are in `docs/current-state.md` and
+`docs/architecture.md`.
 
-### Routes
+| Area | Path | Responsibility |
+|---|---|---|
+| Frontend UI | `src/` | Views, components, styles, presentation copy |
+| Product mock state | `src/mock/` | Client-only product-app fixtures, session, storage |
+| Shared contracts | `shared/` | Types, IDs, API envelopes |
+| Server domain | `server/domain/` | Authoritative demo state and transitions |
+| Server API | `server/api/` | REST and SSE |
+| Wallet verification | `server/wallet/` | Challenges and Ed25519 verification |
+| Solana | `server/solana/` | Server-only devnet proof and payout |
 
-The product app is mock-driven and needs no API. The API + Solana demo lives
-under `/live/*`.
+Notify dependent work before changing `shared/` contracts or IDs.
 
-Product (mocked, client state only):
+## Delivery rules
 
-```text
-/                              Landing
-/auth                          Choose account type
-/auth/register?type=…          Register as customer or business
-/auth/login                    Sign in
-/app/deals                     Customer default view
-/app/deals/:dealId             Deal detail, criteria, claim actions
-/business                      Business dashboard default view
-/business/campaigns/new        Create-campaign wizard
-```
+- Use Node.js 20 or newer.
+- Run `npm run typecheck` and `npm run build` after every meaningful
+  integration. Run focused tests where available.
+- Keep finished user-facing English copy centralized in `src/copy/en.ts`.
+- Preserve explicit loading, disabled, success, empty, and error states.
+- Build mobile-first for 375px, with visible focus, accessible contrast,
+  44px minimum touch targets, and reduced-motion support.
+- [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) is the visual authority. Read it
+  before changing UI; compose from `src/components/schematic/` where relevant.
 
-Live demo (server-authoritative, Solana devnet):
+## Wallet and secret safety - non-negotiable
 
-```text
-/live
-/live/customer/:customerId
-/live/business/:businessId/advertiser
-/live/business/:businessId/host
-```
-
-Live aliases:
-
-```text
-/live/customer   → /live/customer/nino
-/live/advertiser → /live/business/magnolia-film-lab/advertiser
-/live/host       → /live/business/camora/host
-```
-
-Reject or redirect a live business workspace when the business lacks that
-capability. `/demo-preview` no longer exists; the landing page replaced it.
-
-## Business model
-
-- **Customer** and **business** are the only account types anyone registers as.
-- **Advertiser** and **host** are *states derived from data*, not signup choices:
-  a business is a **host** when it has accepted deals, and an **advertiser**
-  when it owns an active campaign with a budget.
-- Same business may advertise one campaign and host another.
-- `Business.capabilities[]` remains the server-side representation for the live
-  demo; the product app derives the same distinction from campaigns and deals.
-
-Navigation must stay distinct:
-
-- `DemoPersonaSwitcher` — live-demo tooling (Nino / Magnolia / Camora), labelled
-  "Demo mode". Only appears under `/live/*`.
-- `BusinessWorkspaceSwitcher` — advertiser/host tasks for the same business.
-
-## English copy
-
-All app-owned UI copy must be clear, natural English. Keep business names,
-`LocalLoop`, addresses, wallet addresses, signatures, IDs, `SOL`, `devnet`, and
-URLs in their conventional form.
-
-- Set `<html lang="en">`.
-- Keep user-facing terminology centralized in `src/copy/en.ts`; do not expose
-  raw enum values as finished UI copy.
-- Prefer direct, concise language. Clearly distinguish simulated funding from
-  real server-funded devnet activity.
-
-## Design direction
-
-The visual system is **fixed and specified** in [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md).
-Read it before touching UI. Summary:
-
-- Concept: a neighborhood rewards network drawn as a survey plan crossed with a
-  patch panel. Architectural/blueprint + circuit/systems diagram +
-  post-industrial utility labeling, with brutalist information design as accent.
-- Recurring motif: the advertiser → host → customer → advertiser loop trace.
-- Paper color system: off-white ground, near-black ink, one signal accent, plus
-  reserved state colors. Square corners by default.
-- Line weight carries meaning (`--line-hair` … `--line-heavy`); do not give
-  every box the same border.
-- Three type roles: display, interface, and monospace technical. Microtype is
-  metadata, never body copy.
-- One numbering grammar: `A.01`, `FIG. 01`, `STEP 2 / 5`, `LOOP/ACTIVE`.
-- Compose from the primitives in `src/components/schematic/`; add a primitive
-  instead of one-off decorative markup.
-- Every technical mark must trace back to real content. Delete decoration that
-  has no informational or hierarchical role.
-
-Guardrails: mobile-first at 375px, responsive on desktop, ≥44px touch targets,
-accessible contrast, visible focus, readable typography, `prefers-reduced-motion`
-support, and explicit loading, disabled, success, empty, and error states.
-Recompose diagrams for mobile rather than shrinking them.
-
-## Solana wallet safety (non-negotiable)
-
-Connected advertiser wallet must never lose funds — not even devnet SOL.
-
-- Frontend may use: connect, disconnect, `signMessage` only.
-- Frontend must never call: `sendTransaction`, `signTransaction`,
-  `signAllTransactions`.
-- Never construct a transfer with the connected wallet as source or fee payer.
-- Campaign funding is a **simulated** ledger action authorized by a signed message.
-- Only the server demo wallet submits devnet txs and pays fees.
-- Refuse Solana service start unless `SOLANA_CLUSTER === 'devnet'`.
-- Server private key must never appear in source, logs, API responses, Git, or
-  any `VITE_*` variable.
-- Explorer links always include `?cluster=devnet`.
-- Label funding as simulated; on-chain activity as devnet demo — never as
-  production escrow or real advertiser funding.
-
-## Secrets
+- A connected advertiser wallet may only connect, disconnect, and
+  `signMessage`.
+- Never call or request `sendTransaction`, `signTransaction`, or
+  `signAllTransactions` from the connected wallet.
+- Campaign funding is a simulated application-ledger action; only the server
+  demo wallet submits devnet transactions and pays fees.
+- Refuse Solana service outside `SOLANA_CLUSTER=devnet`.
+- Never put a private key in client code, logs, API responses, Git, or a
+  `VITE_*` variable.
+- Label funding as simulated and chain activity as devnet demo activity.
 
 Commit `.env.example` only. Never commit `.env`, generated keypairs, or
 `node_modules`.
-
-## Epic ownership (P0)
-
-| Epic | Owner focus |
-|------|-------------|
-| LL-101 | Foundation, shared contracts, shell, copy, styles |
-| LL-102 | Server domain, REST, SSE, DemoStateProvider |
-| LL-103 | Customer + host feature views |
-| LL-104 | Advertiser workspace + dual-capability UX |
-| LL-105 | Wallet auth + server Solana funding proof / payout |

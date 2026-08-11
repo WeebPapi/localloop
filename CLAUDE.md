@@ -1,63 +1,44 @@
-# LocalLoop — Concise Agent Rules
+# LocalLoop - Concise Agent Rules
 
-New full-stack demo (not a POC refactor). Follow `CONTEXT_HANDOVER.md` +
-`HACKATHON_EPICS.md` + `DESIGN_LANGUAGE.md`. Keep them in sync. Reconcile
-conflicts before coding.
+## Read first
 
-## Two layers
+1. [`docs/agent-context.md`](./docs/agent-context.md)
+2. The assigned Linear issue
+3. The relevant canonical doc: vision/scope, current state, architecture,
+   decision record, or [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md)
 
-- **Product app** (mocked, client state): `/`, `/auth/*`, `/app/*`, `/business/*`
-- **Live demo** (server + Solana devnet): `/live/*` — intact, just disconnected
+Repository docs are canonical; Linear and task text organize work but do not
+replace product context.
 
-Never weaken the live layer while building product surfaces.
+## Documentation gate
 
-## Boundaries
+Update the appropriate canonical document in the same PR when you change:
 
-- `src/` UI · `shared/` contracts · `server/domain/` state · `server/api/` REST/SSE
-- `server/wallet/` verify · `server/solana/` server-only (LL-105 only for secrets)
-- `src/mock/` product-app mock data, session, storage
-- Do not edit another owner’s files without coordination.
-- Server state is authoritative for `/live/*`; client is a projection. No DB / Docker / prod auth.
+- product vision, pilot scope, success criteria, or exclusions;
+- a user journey, route, seed scenario, important limitation, or shipped state;
+- architecture, API/state contract, security boundary, or durable decision.
 
-## Commands
+Use `docs/vision.md`, `docs/mvp-georgia.md`, `docs/current-state.md`,
+`docs/architecture.md`, or a new ADR in `docs/decisions/`. For a routine change
+that has no documentation impact, state `Docs: not required` and why in the PR.
 
-```bash
-npm run dev | typecheck | build | start # Node 20+
-```
+## Runtime boundaries
 
-Finish meaningful work with typecheck + build.
+- Product app: mocked client state at `/`, `/auth/*`, `/app/*`, `/business/*`.
+- Live demo: server-authoritative state, wallet verification, and Solana devnet
+  receipts at `/live/*`.
+- Do not weaken the live demo while building product surfaces.
+- `src/` is UI; `src/mock/` is product mock state; `shared/` is contracts;
+  `server/domain/` is authoritative demo state; `server/api/` is REST/SSE;
+  `server/wallet/` verifies signatures; `server/solana/` is server-only.
 
-## Routes
+## Non-negotiables
 
-Product: `/` · `/auth` · `/auth/register` · `/auth/login` · `/app/deals` ·
-`/app/deals/:dealId` · `/business` · `/business/campaigns/new`
-
-Live: `/live` · `/live/customer/:id` · `/live/business/:id/advertiser|host`
-Aliases: `/live/customer`→nino · `/live/advertiser`→magnolia · `/live/host`→camora
-Enforce business capabilities on live workspace routes. `/demo-preview` is gone.
-
-## Model
-
-Only **customer** and **business** register. Advertiser/host are derived states:
-host = has accepted deals; advertiser = owns an active campaign with a budget.
-Keep demo persona switcher (live only) ≠ business workspace switcher.
-
-## Copy & design
-
-English UI; `lang="en"`; centralize finished UI terms in `src/copy/en.ts`.
-Design language is **fixed** — see `DESIGN_LANGUAGE.md`: survey plan × patch
-panel; blueprint + systems diagram + post-industrial labeling; loop trace motif;
-paper palette with one signal accent; meaningful line weights; display/interface/
-mono type roles; `A.01` / `FIG. 01` / `LOOP/ACTIVE` numbering; compose from
-`src/components/schematic/`. No gradients-as-decoration, no crypto-dashboard
-clichés, no mark without real content behind it.
-
-Guardrails: 375px mobile-first, ≥44px targets, contrast, visible focus,
-reduced-motion support, explicit loading/disabled/empty/success/error states.
-
-## Solana safety
-
-`signMessage` only on connected wallet — never send/sign transactions.
-Funding = simulated ledger. Server demo wallet only on **devnet**.
-No secrets in `VITE_*`, Git, logs, or API. Explorer: `?cluster=devnet`.
-Product-app wallet and budget steps are mock UI with no Explorer links.
+- Node 20+; finish meaningful changes with `npm run typecheck` and
+  `npm run build`.
+- English UI copy in `src/copy/en.ts`; mobile-first, accessible, explicit
+  loading/empty/error states.
+- Follow `DESIGN_LANGUAGE.md` for all visual work.
+- Connected wallets may only use `signMessage`; never request or construct a
+  wallet transaction. Funding is simulated; server-only devnet code submits
+  transactions. Never expose secrets or use mainnet.

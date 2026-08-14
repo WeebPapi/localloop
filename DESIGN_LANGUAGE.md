@@ -23,7 +23,7 @@ PRIMARY GEOMETRY:      orthogonal traces, parcel blocks, node circles
 PRIMARY LINE LANGUAGE: hairline construction / thin edges / medium frames / heavy section rules
 PRIMARY TYPE CONTRAST: tight display sans vs monospace technical labels
 PRIMARY MOTIF:         the closed loop (advertiser → host → customer → advertiser)
-DATA USED AS DECORATION: SOL budgets, visit counts, claim IDs, campaign IDs, addresses
+DATA USED AS DECORATION: pilot-ledger budgets, visit counts, claim IDs, campaign IDs, addresses
 MOTION LANGUAGE:       trace flow along the loop, plus a teleprinter-style character reveal for headlines/labels tied to a real page load or state change; both disabled under reduced motion
 ```
 

@@ -2,7 +2,7 @@
 
 **Status:** Canonical
 **Owner:** Aleksandre Kapanadze
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-14
 **Update when:** the target customer, core value proposition, or product
 principles change.
 
@@ -37,15 +37,20 @@ after the core loop works reliably for real participants.
 3. **Prove one complete loop before expanding.** Campaign setup, host
    participation, customer progress, reward redemption, and outcome visibility
    matter more than marketplace breadth.
-4. **Be truthful about money and infrastructure.** Demo funding is simulated;
+4. **Keep the MVP independent of crypto infrastructure.** The Georgia pilot
+   must work without wallets, SOL, blockchain receipts, or a technical-demo
+   deployment. We should revisit those capabilities only if pilot evidence
+   identifies a trust or verification problem they could solve.
+5. **Be truthful about money and infrastructure.** Demo funding is simulated;
    devnet activity is never presented as production settlement.
-5. **Prefer operational clarity to feature volume.** A pilot team must be able
+6. **Prefer operational clarity to feature volume.** A pilot team must be able
    to explain, support, and learn from every live flow.
 
 ## What LocalLoop is not, yet
 
 - A general-purpose global loyalty marketplace
 - A production payment, custody, escrow, or blockchain protocol
+- A product whose core loop requires a wallet, token, or blockchain
 - A substitute for a business's POS, CRM, or authentication system
 - A product that requires businesses to permanently choose only one role
 

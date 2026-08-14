@@ -24,10 +24,15 @@ that has no documentation impact, state `Docs: not required` and why in the PR.
 
 ## Runtime boundaries
 
+- Delivery priority: prove the Georgia MVP without wallets, SOL, blockchain
+  receipts, or a deployed `/live/*` environment. Do not add crypto dependencies
+  to product routes; see ADR-004.
 - Product app: mocked client state at `/`, `/auth/*`, `/app/*`, `/business/*`.
 - Live demo: server-authoritative state, wallet verification, and Solana devnet
   receipts at `/live/*`.
-- Do not weaken the live demo while building product surfaces.
+- The live demo is an isolated technical proof, not a pilot milestone or
+  parallel product track. Touch it only through an explicit issue and do not
+  weaken it while building product surfaces.
 - `src/` is UI; `src/mock/` is product mock state; `shared/` is contracts;
   `server/domain/` is authoritative demo state; `server/api/` is REST/SSE;
   `server/wallet/` verifies signatures; `server/solana/` is server-only.
@@ -38,6 +43,8 @@ that has no documentation impact, state `Docs: not required` and why in the PR.
   `npm run build`.
 - English UI copy in `src/copy/en.ts`; mobile-first, accessible, explicit
   loading/empty/error states.
+- Product budget and host compensation use a wallet-free simulated pilot
+  ledger, not SOL or a mock-wallet requirement.
 - Follow `DESIGN_LANGUAGE.md` for all visual work.
 - Connected wallets may only use `signMessage`; never request or construct a
   wallet transaction. Funding is simulated; server-only devnet code submits

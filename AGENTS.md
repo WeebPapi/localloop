@@ -53,6 +53,19 @@ canonical document merely to make it look recently updated.
 
 ## Product and runtime boundaries
 
+### Delivery sequence
+
+The Georgia MVP must prove the complete reward loop without wallets, SOL,
+blockchain receipts, or a deployed `/live/*` environment. Unless an issue
+explicitly says otherwise, product and pilot work targets the wallet-free
+product routes and their mocked state.
+
+Do not add new wallet, Solana, receipt, or crypto-dependent behavior to product
+routes. The existing live demo is an isolated technical proof, not a parallel
+product track or milestone gate. Work on it only through an explicit issue and
+preserve every safety rule below. See
+[`ADR-004`](./docs/decisions/ADR-004-georgia-mvp-is-crypto-independent.md).
+
 The repository has two intentionally different layers:
 
 1. **Product app** (`/`, `/auth/*`, `/app/*`, `/business/*`) is a mocked,
@@ -83,6 +96,9 @@ Notify dependent work before changing `shared/` contracts or IDs.
   integration. Run focused tests where available.
 - Keep finished user-facing English copy centralized in `src/copy/en.ts`.
 - Preserve explicit loading, disabled, success, empty, and error states.
+- Represent product-app campaign budget and host compensation through a
+  wallet-free simulated pilot ledger. Do not use SOL or a mock wallet as an MVP
+  requirement.
 - Build mobile-first for 375px, with visible focus, accessible contrast,
   44px minimum touch targets, and reduced-motion support.
 - [`DESIGN_LANGUAGE.md`](./DESIGN_LANGUAGE.md) is the visual authority. Read it

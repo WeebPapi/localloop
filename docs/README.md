@@ -2,7 +2,7 @@
 
 **Status:** Canonical
 **Decision owner:** Aleksandre Kapanadze
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-14
 
 These versioned Markdown files are the source of truth for LocalLoop's product
 and technical context. Linear is the work-management layer: it should link to
@@ -17,6 +17,7 @@ these documents rather than repeat their detailed content.
 | Georgia MVP pilot scope | [`mvp-georgia.md`](./mvp-georgia.md) |
 | What exists today | [`current-state.md`](./current-state.md) |
 | System, domain, and safety boundaries | [`architecture.md`](./architecture.md) |
+| MVP/technical-demo sequencing | [`decisions/ADR-004-georgia-mvp-is-crypto-independent.md`](./decisions/ADR-004-georgia-mvp-is-crypto-independent.md) |
 | Why a durable decision was made | [`decisions/`](./decisions/) |
 | Visual system | [`../DESIGN_LANGUAGE.md`](../DESIGN_LANGUAGE.md) |
 

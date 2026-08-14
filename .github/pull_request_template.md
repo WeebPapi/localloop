@@ -2,6 +2,17 @@
 
 <!-- What changed and why? Link the Linear issue. -->
 
+## Scope alignment
+
+- Layer: Product app / Live technical proof / Shared / Operations
+- Parent epic or decision:
+- [ ] This PR keeps the Georgia MVP wallet- and crypto-independent
+- [ ] Any new wallet, Solana, receipt, or crypto behavior has an explicit issue
+      and accepted decision
+
+<!-- Repository docs are canonical. The /live/* devnet walkthrough is an
+isolated technical proof, not a product milestone or launch dependency. -->
+
 ## Verification
 
 - [ ] Focused tests or manual verification completed

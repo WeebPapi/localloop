@@ -2,7 +2,7 @@
 
 **Status:** Canonical
 **Owner:** Aleksandre Kapanadze
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-14
 **Update when:** a route, user journey, implementation boundary, meaningful
 capability, or known limitation changes.
 
@@ -29,6 +29,16 @@ Its state lives in the client reducer and local storage under `src/mock/`. Any
 wallet or budget interaction in this layer is explicitly mock UI and must not
 claim to create a real transaction or show a blockchain receipt.
 
+### Known product-alignment gap
+
+The campaign wizard and some product-facing copy still use a mock wallet, SOL
+budgets, SOL-denominated host payouts, and prominent links to the devnet demo.
+Those elements predate the accepted product-first sequencing decision and are
+not Georgia MVP requirements. Follow-up product work should replace them with a
+wallet-free simulated pilot ledger and remove the technical demo from primary
+product navigation. Until that work lands, the UI must remain explicit that no
+wallet action or value transfer occurs.
+
 ### Live demo - server-authoritative technical proof
 
 The `/live/*` routes use the Node/Express API, server-owned in-memory state,
@@ -49,6 +59,12 @@ The seeded walkthrough uses Nino as customer, Magnolia Film Lab as advertiser,
 and Camora as host. TSRE Gym illustrates a second, proposed host relationship.
 The live layer is a demo constraint, not production infrastructure: state is
 in-memory and resets on server restart.
+
+The live layer is also not a Georgia MVP dependency, pilot milestone, launch
+gate, or target production architecture. It is preserved as an optional
+technical proof and should receive new feature work only through an explicit,
+separately justified issue. Its existing safety guarantees remain mandatory
+whenever the code is run or changed.
 
 ## Current technical constraints
 

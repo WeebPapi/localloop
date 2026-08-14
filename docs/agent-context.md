@@ -2,7 +2,7 @@
 
 **Status:** Canonical
 **Owner:** Aleksandre Kapanadze
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-14
 **Update when:** the product thesis, pilot scope, implementation boundary, or a
 durable decision changes.
 
@@ -18,6 +18,12 @@ server-authoritative live demo. Do not mistake the demo's current Solana devnet
 implementation for production payments infrastructure, and do not let product
 surface work weaken its safety guarantees.
 
+Product delivery is sequenced deliberately: prove the wallet-free Georgia MVP
+loop first. The `/live/*` devnet walkthrough is an optional, isolated technical
+proof, not a pilot dependency or parallel product-development track. New wallet
+or Solana product work requires an explicit later decision grounded in pilot
+evidence.
+
 ## Read the right context
 
 - For **product choices**, read [`vision.md`](./vision.md) and
@@ -32,8 +38,12 @@ surface work weaken its safety guarantees.
 
 - Customers and businesses are account types. Advertiser and host are business
   capabilities, not permanent signup types.
+- The Georgia MVP must work without wallets, SOL, blockchain receipts, or a
+  running `/live/*` environment.
 - The product app is mocked and client-side; the `/live/*` demo owns its state
   on the server.
+- Existing live-demo safety code remains protected when touched, but live-demo
+  completion does not gate product or pilot milestones.
 - A connected advertiser wallet signs a message only. It never sends, signs, or
   pays for a transaction.
 - Server-side Solana activity is devnet-only and must be described truthfully.

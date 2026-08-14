@@ -2,11 +2,27 @@
 
 **Status:** Canonical
 **Owner:** Aleksandre Kapanadze
-**Last reviewed:** 2026-08-11
+**Last reviewed:** 2026-08-14
 **Update when:** a domain rule, API/state contract, system boundary, deployment
 assumption, or security requirement changes.
 
 ## Runtime model
+
+### Product sequencing boundary
+
+The Georgia MVP architecture is crypto-independent. Product routes must not
+require a wallet, SOL, blockchain receipt, Solana configuration, or a running
+live-demo server. Campaign budget and host compensation in the product layer are
+simulated pilot-ledger concepts, not on-chain settlement.
+
+The server, wallet, and Solana code below describes an existing, isolated
+technical proof. It is not the target production architecture and does not gate
+the product or pilot milestones. New crypto-dependent product behavior requires
+a separately accepted decision after pilot evidence identifies a concrete trust
+or verification need. Safety rules remain non-negotiable whenever the live demo
+is touched.
+
+### Live-demo runtime
 
 ```text
 React + Vite frontend
@@ -42,7 +58,7 @@ intent, but it must not maintain a competing authoritative domain store.
   a host business. A claim belongs to a customer. Payout state is separate from
   deal and claim state.
 
-Important demo lifecycle:
+Important live-demo lifecycle:
 
 ```text
 signed authorization
